@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session
 
 from app.auth import get_current_user
 from app.database import get_db
+from app.models.broodstock_cage import BroodstockCage
 from app.models.feed_event import FeedEvent
 from app.models.pond import Pond
 from app.models.user import User
@@ -37,9 +38,16 @@ def get_stats(
         .scalar()
         or 0.0
     )
+    occupied_cages = (
+        db.query(func.count(BroodstockCage.id))
+        .filter(BroodstockCage.occupied > 0)
+        .scalar()
+        or 0
+    )
     return DashboardStats(
         pond_total=pond_total,
         quarantine_count=quarantine_count,
         samples_last_24h=samples_last_24h,
         feed_kg_last_7d=float(feed_kg_last_7d),
+        occupied_cages=occupied_cages,
     )

@@ -46,11 +46,21 @@ docker compose up --build
 3. **Pond 育苗塘**：`hatcheryId`、`pondCode`、`species`、`volumeM3`、`status(stocked|dry|quarantine)`；同场 `pondCode` 唯一
 4. **WaterSample 水质样**：`pondId`、`sampledAt`、`tempC`、`salinityPpt`、`doMgL`、`ph`、`notes`；`doMgL > 0` 且 `ph ∈ [6,9]`，否则返回 **400**
 5. **FeedEvent 投喂**：`pondId`、`fedAt`、`feedType`、`amountKg`、`operatorName`
-6. **Dashboard**：塘总数、quarantine 数、近 24h 采样数、近 7 日投喂总量 kg
+6. **BroodstockCage 亲虾暂养笼位**：`hatcheryId`、`cageCode`、`capacity`、`occupied`、`isActive`
+7. **Dashboard**：塘总数、quarantine 数、近 24h 采样数、近 7 日投喂总量 kg、占用笼位数
+
+## 亲虾笼位与限喂联动
+
+- 笼位字段：所属育苗场、笼位号、容纳尾数（正整数）、当前占用尾数（默认 0）、是否启用；**同场笼位号唯一**。
+- **入笼** `POST /api/broodstock-cages/{id}/stock-in`：占用尾数增加，超出容纳尾数返回 **409**；已停用笼位不可入笼（**400**）。
+- **出笼** `POST /api/broodstock-cages/{id}/stock-out`：占用尾数减少，不得为负，否则 **400**。
+- 入笼 / 出笼技术员与场长均可操作；**停用笼位仅场长**，且当前占用必须为 0（否则 403 / 400）。
+- **限喂联动**：某场启用笼位的占用合计大于 0 时，该场下属塘口单次投喂不得超过 **2 kg**，否则返回 **400**（亲虾占用限喂）；占用清零后自动恢复原投喂规则。
+- 种子数据中东港潮汐一号场 `C-01` 笼已占用 120 尾，可直接验证限喂联动。
 
 ## 前端页面
 
-Login · Dashboard · Hatcheries · Ponds · WaterSamples · FeedEvents
+Login · Dashboard · Hatcheries · Ponds · WaterSamples · FeedEvents · BroodstockCages（亲虾笼位）
 
 ## 本地开发（可选）
 

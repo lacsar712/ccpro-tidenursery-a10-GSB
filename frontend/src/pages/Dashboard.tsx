@@ -38,6 +38,10 @@ export default function Dashboard() {
             {stats ? stats.feedKgLast7d.toFixed(2) : '—'}
           </div>
         </div>
+        <div className="stat-card warn">
+          <div className="stat-label">占用笼位数</div>
+          <div className="stat-value">{stats?.occupiedCages ?? '—'}</div>
+        </div>
       </div>
     </div>
   )
