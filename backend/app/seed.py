@@ -2,6 +2,7 @@ from datetime import datetime, timedelta, timezone
 
 from app.auth import hash_password
 from app.database import SessionLocal
+from app.models.broodstock_cage import BroodstockCage
 from app.models.feed_event import FeedEvent
 from app.models.hatchery import Hatchery
 from app.models.pond import Pond
@@ -74,6 +75,33 @@ def seed() -> None:
                 status="dry",
             )
             db.add_all([p1, p2, p3, p4])
+            db.flush()
+
+            db.add_all(
+                [
+                    BroodstockCage(
+                        hatchery_id=h1.id,
+                        cage_code="C-01",
+                        capacity=500,
+                        occupied=120,
+                        is_active=True,
+                    ),
+                    BroodstockCage(
+                        hatchery_id=h1.id,
+                        cage_code="C-02",
+                        capacity=300,
+                        occupied=0,
+                        is_active=True,
+                    ),
+                    BroodstockCage(
+                        hatchery_id=h2.id,
+                        cage_code="C-01",
+                        capacity=400,
+                        occupied=0,
+                        is_active=True,
+                    ),
+                ]
+            )
             db.flush()
 
             now = datetime.now(timezone.utc)

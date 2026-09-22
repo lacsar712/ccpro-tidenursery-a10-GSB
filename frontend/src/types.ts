@@ -41,9 +41,19 @@ export type FeedEvent = {
   operatorName: string
 }
 
+export type BroodstockCage = {
+  id: number
+  hatcheryId: number
+  cageCode: string
+  capacity: number
+  occupied: number
+  isActive: boolean
+}
+
 export type DashboardStats = {
   pondTotal: number
   quarantineCount: number
   samplesLast24h: number
   feedKgLast7d: number
+  occupiedCageCount: number
 }

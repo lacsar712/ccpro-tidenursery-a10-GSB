@@ -7,6 +7,7 @@ const links = [
   { to: '/ponds', label: '育苗塘' },
   { to: '/water-samples', label: '水质样' },
   { to: '/feed-events', label: '投喂事件' },
+  { to: '/broodstock-cages', label: '亲虾笼位' },
 ]
 
 export default function Layout() {

@@ -1,16 +1,21 @@
 from typing import List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
+from sqlalchemy import func
 from sqlalchemy.orm import Session
 
 from app.auth import get_current_user
 from app.database import get_db
+from app.models.broodstock_cage import BroodstockCage
 from app.models.feed_event import FeedEvent
 from app.models.pond import Pond
 from app.models.user import User
 from app.schemas.feed_event import FeedEventCreate, FeedEventOut
 
 router = APIRouter(prefix="/api/feed-events", tags=["feed-events"])
+
+# 亲虾暂养笼位有占用时，该场塘口单次投喂上限（kg）
+BROODSTOCK_FEED_LIMIT_KG = 2.0
 
 
 @router.get("", response_model=List[FeedEventOut])
@@ -34,6 +39,20 @@ def create_event(
     pond = db.query(Pond).filter(Pond.id == payload.pond_id).first()
     if not pond:
         raise HTTPException(status_code=400, detail="塘口不存在")
+    occupied_total = (
+        db.query(func.coalesce(func.sum(BroodstockCage.occupied), 0))
+        .filter(
+            BroodstockCage.hatchery_id == pond.hatchery_id,
+            BroodstockCage.is_active.is_(True),
+        )
+        .scalar()
+        or 0
+    )
+    if occupied_total > 0 and payload.amount_kg > BROODSTOCK_FEED_LIMIT_KG:
+        raise HTTPException(
+            status_code=400,
+            detail="亲虾暂养笼位仍有占用，本场塘口单次投喂不得超过 2 kg（亲虾占用限喂）",
+        )
     item = FeedEvent(
         pond_id=payload.pond_id,
         fed_at=payload.fed_at,

@@ -16,7 +16,7 @@ export default function Dashboard() {
     <div>
       <header className="page-header">
         <h1>运行看板</h1>
-        <p className="muted">塘口状态 · 近 24h 采样 · 近 7 日投喂</p>
+        <p className="muted">塘口状态 · 近 24h 采样 · 近 7 日投喂 · 亲虾笼位占用</p>
       </header>
       {error && <div className="error">{error}</div>}
       <div className="stat-grid">
@@ -37,6 +37,10 @@ export default function Dashboard() {
           <div className="stat-value">
             {stats ? stats.feedKgLast7d.toFixed(2) : '—'}
           </div>
+        </div>
+        <div className="stat-card warn">
+          <div className="stat-label">占用笼位数</div>
+          <div className="stat-value">{stats?.occupiedCageCount ?? '—'}</div>
         </div>
       </div>
     </div>

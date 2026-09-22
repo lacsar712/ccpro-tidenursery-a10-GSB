@@ -17,3 +17,6 @@ class Hatchery(Base):
     ponds: Mapped[List["Pond"]] = relationship(
         "Pond", back_populates="hatchery", cascade="all, delete-orphan"
     )
+    cages: Mapped[List["BroodstockCage"]] = relationship(
+        "BroodstockCage", back_populates="hatchery", cascade="all, delete-orphan"
+    )
